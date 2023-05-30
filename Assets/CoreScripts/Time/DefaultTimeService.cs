@@ -12,6 +12,7 @@ namespace Asteroid.Time
         float RealTime { get; }
         float DeltaTime { get; }
         float FixedDeltaTime { get; }
+        bool TimeRunning { get; set; }
     }
 
     public class DefaultTimeService : ITimeService
@@ -23,5 +24,7 @@ namespace Asteroid.Time
         public float DeltaTime => UnityEngine.Time.deltaTime;
 
         public float FixedDeltaTime => UnityEngine.Time.fixedDeltaTime;
+
+        public bool TimeRunning { get => UnityEngine.Time.timeScale != 0; set => UnityEngine.Time.timeScale = value ? 1 : 0; }
     }
 }

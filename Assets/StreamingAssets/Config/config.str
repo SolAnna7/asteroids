@@ -5,13 +5,19 @@ ship.max_speed=0.05
 ship.rotation_speed=180
 ship.acceleration=0.1
 ship.deceleration=0.07
-ship.max_health=99
+ship.max_health=3
 ship.invulnerability_sec=2
 
 asteroid.speed=1.5
 asteroid.free_spawn_radius=4
 asteroid.invulnerability_sec=1
+asteroid.max_generation=2
 
-bullet.speed=4
-bullet.fire_interval=0.7
+asteroid.score_by_gen.0=10
+asteroid.score_by_gen.1=20
+asteroid.score_by_gen.2=30
+asteroid.score_by_gen.3=40
+
+bullet.speed=6
+bullet.fire_interval=0.5
 bullet.lifetime=2

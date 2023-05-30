@@ -64,6 +64,7 @@ namespace Asteroid.Gameplay
             {
                 _bulletInstances.Remove(toRemove);
                 toRemove.Enabled = false;
+                _bodyPool.Push(toRemove);
             }
             _instancesToRemove.Clear();
             foreach (var toAdd in _instancesToAdd)

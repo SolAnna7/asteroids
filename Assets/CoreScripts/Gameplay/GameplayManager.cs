@@ -6,7 +6,7 @@ using Asteroid.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 namespace Asteroid.Gameplay
 {
@@ -22,6 +22,7 @@ namespace Asteroid.Gameplay
         private ShipController _shipController;
         private AsteroidController _asteroidController;
         private BulletController _bulletController;
+        private ScoreCounterService _scoreService;
 
         private void Awake()
         {
@@ -29,22 +30,27 @@ namespace Asteroid.Gameplay
             _shipController = new ShipController(_shipBody);
             _asteroidController = new AsteroidController();
             _bulletController = new BulletController();
-
+            _scoreService = new ScoreCounterService();
+            DefaultTimeService timeService = new DefaultTimeService();
+            
             _serviceProvider = new ServiceProvider.ServiceProviderBuilder()
                 .RegisterService<IAsteroidBodyFactory>(new ResourceAsteroidBodyFactory())
                 .RegisterService<IBulletBodyFactory>(new ResourceBulletBodyFactory())
                 .RegisterService<IRandomService>(new RandomService(0))
-                .RegisterService<ITimeService>(new DefaultTimeService())
+                .RegisterService<ITimeService>(timeService)
                 .RegisterService<IConfigStore>(new StreamingAssetsConfigStore())
                 .RegisterService<IMapConfinementHelper>(new MapConfinementHelper())
                 .RegisterService<IInputHandler>(_inputHandlet)
-                .RegisterService(_asteroidController)
+                .RegisterService<IAsteroidController>(_asteroidController)
                 .RegisterService<IBulletController>(_bulletController)
-                .RegisterService(_shipController)
+                .RegisterService<IShipController>(_shipController)
+                .RegisterService<IScoreCounterService>(_scoreService)
                 .Initialise();
 
             _uiController.Initialise(_serviceProvider);
             _shipBody.Initialise(_serviceProvider);
+
+            timeService.TimeRunning = true;
         }
 
         // Update is called once per frame

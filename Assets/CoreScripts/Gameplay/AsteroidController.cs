@@ -11,7 +11,13 @@ using UnityEngine;
 
 namespace Asteroid.Gameplay
 {
-    public class AsteroidController : ServiceProvider.IInitialisableService
+    public interface IAsteroidController
+    {
+        public event Action<int> OnAsteroidHitByBullet;
+        public event Action OnAllAsteroidsDestroyed;
+    }
+
+    public class AsteroidController : ServiceProvider.IInitialisableService, IAsteroidController
     {
         private IConfigStore _configStore;
         private ITimeService _timeService;
@@ -24,6 +30,9 @@ namespace Asteroid.Gameplay
         private IDictionary<IMapBody, AsteroidInstanceData> _asteroidInstances = new Dictionary<IMapBody, AsteroidInstanceData>();
         private ISet<IMapBody> _instancesToRemove = new HashSet<IMapBody>();
         private ISet<AsteroidInstanceData> _instancesToAdd = new HashSet<AsteroidInstanceData>();
+
+        public event Action<int> OnAsteroidHitByBullet;
+        public event Action OnAllAsteroidsDestroyed;
 
         public void Initialise(ServiceProvider serviceProvider)
         {
@@ -70,7 +79,7 @@ namespace Asteroid.Gameplay
                     return;
                 }
 
-                if (asteroidData.generation < 3)
+                if (asteroidData.generation < _configStore.AsteroidMaxGeneration)
                 {
                     IMapBody child1 = _factory.CreateBody(body.Position, asteroidData.generation + 1);
                     IMapBody child2 = _factory.CreateBody(body.Position, asteroidData.generation + 1);
@@ -97,9 +106,21 @@ namespace Asteroid.Gameplay
                                                                  _timeService.Time,
                                                                  asteroidData.generation + 1));
                 }
+                else
+                {
+                    if (_asteroidInstances.Count == 1)
+                    {
+                        OnAllAsteroidsDestroyed?.Invoke();
+                    }
+                }
 
                 body.OnCollision -= AsteroidBody_OnCollision;
                 _instancesToRemove.Add(body);
+
+                if(type == IMapBody.MapBodyType.Bullet)
+                {
+                    OnAsteroidHitByBullet?.Invoke(asteroidData.generation);
+                }
             }
         }
 

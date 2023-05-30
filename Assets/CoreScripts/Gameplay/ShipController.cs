@@ -1,6 +1,7 @@
 using Asteroid.Config;
 using Asteroid.Services;
 using Asteroid.Time;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,9 @@ namespace Asteroid.Gameplay
     public interface IShipController
     {
         public int CurrentHealth { get; }
+        float RemainingInvulnerability { get; }
+
+        public event Action OnDeath;
     }
 
     public class ShipController : IShipController, ServiceProvider.IInitialisableService
@@ -32,6 +36,8 @@ namespace Asteroid.Gameplay
         private float _lastBulletFired;
         private IMapBody _shipBody;
 
+        public event Action OnDeath;
+
         public ShipController(IMapBody shipBody)
         {
             this._shipBody = shipBody;
@@ -51,7 +57,7 @@ namespace Asteroid.Gameplay
             _shipSpeedupPerSec = _configStore.ShipAccelearation;
             _shipSlowdownPerSec = _configStore.ShipDecelearation;
             _maxShipSpeedPerSec = _configStore.ShipMaxSpeed;
-            _currentHealt = _configStore.ShipMaxHealth;
+            _currentHealt = GameplaySetupHelper.CurrentHealth > 0 ? GameplaySetupHelper.CurrentHealth : _configStore.ShipMaxHealth;
             _invulnerablityLengthSec = _configStore.ShipInvulnerablilitySec;
             _bulletFireInterval = _configStore.BulletFireInterval;
             _inputHandler.Fire += OnFire;
@@ -81,9 +87,7 @@ namespace Asteroid.Gameplay
 
             if (_currentHealt <= 0)
             {
-                //todo
-                Debug.Log("DEATH");
-                UnityEditor.EditorApplication.isPlaying = false;
+                OnDeath?.Invoke();
             }
         }
 

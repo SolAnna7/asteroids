@@ -26,5 +26,7 @@ namespace Asteroid.Config
         float BulletSpeed { get; }
         float BulletFireInterval { get; }
         float BulletLifetime { get; }
+        int[] AsteroidScoresByGeneration { get; }
+        int AsteroidMaxGeneration { get; }
     }
 }

@@ -72,6 +72,16 @@ namespace Asteroid.Config
 
         public float BulletLifetime => GetFloatValueOrThrowException("bullet.lifetime");
 
+        public int[] AsteroidScoresByGeneration => new int[]
+                {
+                GetIntValueOrThrowException("asteroid.score_by_gen.0"),
+                GetIntValueOrThrowException("asteroid.score_by_gen.1"),
+                GetIntValueOrThrowException("asteroid.score_by_gen.2"),
+                GetIntValueOrThrowException("asteroid.score_by_gen.3"),
+            };
+
+        public int AsteroidMaxGeneration => GetIntValueOrThrowException("asteroid.max_generation");
+
         private string GetStringValueOrThrowException(string key)
         {
             return _configValues.TryGetValue(key, out var value) ? value : throw new Exception($"Key [{key}] not found in configuration file [{_configPath}]");
