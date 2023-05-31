@@ -1,4 +1,5 @@
 using Asteroid.Config;
+using Asteroid.Input;
 using Asteroid.Random;
 using Asteroid.Services;
 using Asteroid.Time;
@@ -17,7 +18,7 @@ namespace Asteroid.Gameplay
         [SerializeField]
         private UIController _uiController;
 
-        private SimpleInputHandler _inputHandlet;
+        private UnityInputSystemInputHandler _inputHandlet;
         private ServiceProvider _serviceProvider;
         private ShipController _shipController;
         private AsteroidController _asteroidController;
@@ -26,7 +27,7 @@ namespace Asteroid.Gameplay
 
         private void Awake()
         {
-            _inputHandlet = new SimpleInputHandler();
+            _inputHandlet = new UnityInputSystemInputHandler();
             _shipController = new ShipController(_shipBody);
             _asteroidController = new AsteroidController();
             _bulletController = new BulletController();
@@ -55,7 +56,7 @@ namespace Asteroid.Gameplay
 
         void Update()
         {
-            _inputHandlet.Tick();
+            //_inputHandlet.Tick();
             _uiController.Tick();
         }
 

@@ -1,4 +1,5 @@
 using Asteroid.Config;
+using Asteroid.Input;
 using Asteroid.Services;
 using Asteroid.Time;
 using System;
@@ -110,7 +111,7 @@ namespace Asteroid.Gameplay
                 _movementSpeedVector *= _maxShipSpeedPerSec / _movementSpeedVector.magnitude;
             }
 
-            _shipBody.MoveToPosition(_movementSpeedVector);
+            _shipBody.Move(_movementSpeedVector);
 
             float rotationVal =
                 (_inputHandler.RotateLeft ? _rotationMultiplierDegreePerSec : 0) +

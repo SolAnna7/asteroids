@@ -96,7 +96,7 @@ namespace Asteroid.Gameplay
             foreach (var instance in _asteroidInstances.Values)
             {
                 instance.body.Rotate(instance.rotation * _timeService.FixedDeltaTime);
-                instance.body.MoveToPosition(instance.speed * _timeService.FixedDeltaTime);
+                instance.body.Move(instance.speed * _timeService.FixedDeltaTime);
             }
         }
 

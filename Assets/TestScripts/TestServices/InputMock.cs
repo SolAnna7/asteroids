@@ -1,4 +1,4 @@
-﻿using Asteroid.Gameplay;
+﻿using Asteroid.Input;
 using System;
 
 namespace Asteroid.Tests

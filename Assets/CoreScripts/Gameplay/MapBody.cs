@@ -28,13 +28,13 @@ namespace Asteroid.Gameplay
         /// <summary>
         /// The position of this body on the map
         /// </summary>
-        public Vector2 Position { get; }
+        public Vector2 Position { get; set; }
 
         /// <summary>
-        /// Moves the body to the specified position
+        /// Moves the body with the specified deltaPosition on the map
         /// </summary>
-        /// <param name="position">The position to move on the map</param>
-        public void MoveToPosition(Vector2 position);
+        /// <param name="deltaPosition">The position to move the body with</param>
+        public void Move(Vector2 deltaPosition);
 
         /// <summary>
         /// Rotates the body with the specified angle. Clockwise is negative.
@@ -87,7 +87,11 @@ namespace Asteroid.Gameplay
         public Vector2 Position
         {
             get => _rigidbody2D.position;
-            set => _rigidbody2D.position = value;
+            set
+            {
+                _mapHelper.IsOutOfBounds(value, 1, out Vector2 updatedPos);
+                _rigidbody2D.position = updatedPos;
+            }
         }
 
         public IMapBody.MapBodyType Type => ownType;
@@ -109,12 +113,9 @@ namespace Asteroid.Gameplay
             _mapHelper = serviceProvider.GetService<IMapConfinementHelper>();
         }
 
-        public void MoveToPosition(Vector2 deltaPosition)
+        public void Move(Vector2 deltaPosition)
         {
-            Vector2 pos = _rigidbody2D.position + deltaPosition;
-            _mapHelper.IsOutOfBounds(pos, 1, out Vector2 updatedPos);
-
-            _rigidbody2D.position = updatedPos;
+            Position = _rigidbody2D.position + deltaPosition;
         }
 
         public void Rotate(float angle)

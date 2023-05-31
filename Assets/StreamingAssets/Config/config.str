@@ -10,7 +10,7 @@ ship.invulnerability_sec=2
 
 asteroid.speed=1.5
 asteroid.free_spawn_radius=4
-asteroid.invulnerability_sec=0
+asteroid.invulnerability_sec=0.5
 asteroid.max_generation=2
 asteroid.start_number=3
 

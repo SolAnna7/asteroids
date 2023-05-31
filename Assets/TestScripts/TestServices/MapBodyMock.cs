@@ -21,7 +21,7 @@ namespace Asteroid.Tests
         {
         }
 
-        public void MoveToPosition(Vector2 position) => LastMoveValue = position;
+        public void Move(Vector2 position) => LastMoveValue = position;
 
         public void Rotate(float angle) => LastRotationValue = angle;
 

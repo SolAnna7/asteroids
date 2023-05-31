@@ -59,7 +59,7 @@ namespace Asteroid.Gameplay
             }
 
             body.Forward = forward;
-            body.MoveToPosition(position);
+            body.Position = position;
 
             _bulletInstances.Add(body, new BulletInstanceData(body, forward * _bulletSpeed, _timeService.Time));
             _lastBulletFired = _timeService.Time;
@@ -77,7 +77,7 @@ namespace Asteroid.Gameplay
 
             foreach (var instance in _bulletInstances.Values)
             {
-                instance.body.MoveToPosition(instance.speed * _timeService.FixedDeltaTime);
+                instance.body.Move(instance.speed * _timeService.FixedDeltaTime);
 
                 if (_timeService.Time - instance.creationTime > _bulletLifetime)
                 {
