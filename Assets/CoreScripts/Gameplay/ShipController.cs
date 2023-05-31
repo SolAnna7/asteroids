@@ -32,8 +32,6 @@ namespace Asteroid.Gameplay
         private float _maxShipSpeedPerSec = 0.02f;
         private float _invulnerablityLengthSec = 0;
         private float _invulnerablityLastTriggered = 0;
-        private float _bulletFireInterval;
-        private float _lastBulletFired;
         private IMapBody _shipBody;
 
         public event Action OnDeath;
@@ -59,21 +57,13 @@ namespace Asteroid.Gameplay
             _maxShipSpeedPerSec = _configStore.ShipMaxSpeed;
             _currentHealt = GameplaySetupHelper.CurrentHealth > 0 ? GameplaySetupHelper.CurrentHealth : _configStore.ShipMaxHealth;
             _invulnerablityLengthSec = _configStore.ShipInvulnerablilitySec;
-            _bulletFireInterval = _configStore.BulletFireInterval;
             _inputHandler.Fire += OnFire;
 
             _invulnerablityLastTriggered = _timeService.Time;
             _shipBody.OnCollision += OnShipBodyCollision;
         }
 
-        private void OnFire()
-        {
-            if (_timeService.Time - _lastBulletFired > _bulletFireInterval)
-            {
-                _bulletController.FireBullet(_shipBody.Position, _shipBody.Forward);
-                _lastBulletFired = _timeService.Time;
-            }
-        }
+        private void OnFire() => _bulletController.FireBullet(_shipBody.Position, _shipBody.Forward);
 
         private void OnShipBodyCollision(IMapBody body, Vector2 arg1, IMapBody.MapBodyType targetType)
         {
@@ -93,16 +83,6 @@ namespace Asteroid.Gameplay
 
         public void FixedTick()
         {
-            _shipBody.Move(_movementSpeedVector);
-
-            float rotationVal =
-                (_inputHandler.RotateLeft ? _rotationMultiplierDegreePerSec : 0) +
-                (_inputHandler.RotateRight ? -_rotationMultiplierDegreePerSec : 0);
-            if (rotationVal != 0)
-            {
-                _shipBody.Rotate(rotationVal * _timeService.FixedDeltaTime);
-            }
-
             if (_inputHandler.Forward)
             {
                 _movementSpeedVector += _shipSpeedupPerSec * _timeService.FixedDeltaTime * _shipBody.Forward;
@@ -116,6 +96,17 @@ namespace Asteroid.Gameplay
             {
                 _movementSpeedVector *= _maxShipSpeedPerSec / _movementSpeedVector.magnitude;
             }
+
+            _shipBody.Move(_movementSpeedVector);
+
+            float rotationVal =
+                (_inputHandler.RotateLeft ? _rotationMultiplierDegreePerSec : 0) +
+                (_inputHandler.RotateRight ? -_rotationMultiplierDegreePerSec : 0);
+            if (rotationVal != 0)
+            {
+                _shipBody.Rotate(rotationVal * _timeService.FixedDeltaTime);
+            }
+
         }
 
     }

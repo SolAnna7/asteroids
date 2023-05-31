@@ -15,22 +15,28 @@ namespace Asteroid.Gameplay
         void FireBullet(Vector2 position, Vector2 forward);
     }
 
-    internal class BulletController : IBulletController, ServiceProvider.IInitialisableService
+    public class BulletController : IBulletController, ServiceProvider.IInitialisableService
     {
+        private ServiceProvider _serviceProvider;
         private IConfigStore _configStore;
         private ITimeService _timeService;
-        private ServiceProvider _serviceProvider;
         private IBulletBodyFactory _factory;
         private float _bulletSpeed;
         private float _bulletLifetime;
+        private float _bulletFireInterval;
+        private float _lastBulletFired;
 
         private readonly IDictionary<IMapBody, BulletInstanceData> _bulletInstances = new Dictionary<IMapBody, BulletInstanceData>();
         private readonly ISet<IMapBody> _instancesToRemove = new HashSet<IMapBody>();
-        private readonly ISet<BulletInstanceData> _instancesToAdd = new HashSet<BulletInstanceData>();
         private readonly Stack<IMapBody> _bodyPool = new();
 
         public void FireBullet(Vector2 position, Vector2 forward)
         {
+            if (_timeService.Time - _lastBulletFired < _bulletFireInterval)
+            {
+                return;
+            }
+
             IMapBody body;
             if (_bodyPool.Count == 0)
             {
@@ -48,6 +54,7 @@ namespace Asteroid.Gameplay
             body.Position = position;
 
             _bulletInstances.Add(body, new BulletInstanceData(body, forward * _bulletSpeed, _timeService.Time));
+            _lastBulletFired = _timeService.Time;
         }
 
         private void Bullet_OnCollision(IMapBody body, Vector2 position, IMapBody.MapBodyType type)
@@ -67,21 +74,12 @@ namespace Asteroid.Gameplay
                 _bodyPool.Push(toRemove);
             }
             _instancesToRemove.Clear();
-            foreach (var toAdd in _instancesToAdd)
-            {
-                _bulletInstances.Add(toAdd.body, toAdd);
-            }
-            _instancesToAdd.Clear();
 
             foreach (var instance in _bulletInstances.Values)
             {
-                if (_instancesToRemove.Contains(instance.body))
-                {
-                    continue;
-                }
                 instance.body.Move(instance.speed * _timeService.FixedDeltaTime);
 
-                if(_timeService.Time - instance.creationTime > _bulletLifetime)
+                if (_timeService.Time - instance.creationTime > _bulletLifetime)
                 {
                     _instancesToRemove.Add(instance.body);
                 }
@@ -98,6 +96,8 @@ namespace Asteroid.Gameplay
 
             _bulletSpeed = _configStore.BulletSpeed;
             _bulletLifetime = _configStore.BulletLifetime;
+            _bulletFireInterval = _configStore.BulletFireInterval;
+            _lastBulletFired = -_bulletFireInterval;
         }
 
 

@@ -21,6 +21,7 @@ namespace Asteroid.Config
         int ShipMaxHealth { get; }
         float ShipInvulnerablilitySec { get; }
         float AsteroidSpeed { get; }
+        int AsteroidStartNumber { get; }
         float AsteroidFreeZoneAtStartupRadius { get; }
         float AsteroidInvulnerablilitySec { get; }
         float BulletSpeed { get; }

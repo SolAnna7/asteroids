@@ -25,8 +25,6 @@ namespace Asteroid.Gameplay
         private IAsteroidBodyFactory _factory;
         private ServiceProvider _serviceProvider;
 
-        //todo map config
-        private int _asteroidNum = 3;
         private IDictionary<IMapBody, AsteroidInstanceData> _asteroidInstances = new Dictionary<IMapBody, AsteroidInstanceData>();
         private ISet<IMapBody> _instancesToRemove = new HashSet<IMapBody>();
         private ISet<AsteroidInstanceData> _instancesToAdd = new HashSet<AsteroidInstanceData>();
@@ -42,10 +40,11 @@ namespace Asteroid.Gameplay
             _factory = serviceProvider.GetService<IAsteroidBodyFactory>();
             _timeService = serviceProvider.GetService<ITimeService>();
 
-            var mapExtents = _configStore.MapExtents;
+            int asteroidNum = _configStore.AsteroidStartNumber;
+            Vector2 mapExtents = _configStore.MapExtents;
             float asteroidFreeZoneAtStartupRadius = _configStore.AsteroidFreeZoneAtStartupRadius;
 
-            for (int i = 0; i < _asteroidNum; i++)
+            for (int i = 0; i < asteroidNum; i++)
             {
                 int cntr = 0;
                 Vector2 position = Vector2.zero;
@@ -59,7 +58,7 @@ namespace Asteroid.Gameplay
                 asteroidBody.Initialise(serviceProvider);
                 asteroidBody.OnCollision += AsteroidBody_OnCollision;
 
-                Vector2 direction = (Vector2)(Quaternion.Euler(0, 0, i * 360 / _asteroidNum) * Vector2.right);
+                Vector2 direction = (Vector2)(Quaternion.Euler(0, 0, i * 360 / asteroidNum) * Vector2.right);
                 _asteroidInstances.Add(asteroidBody, new AsteroidInstanceData(asteroidBody,
                                                                               direction.normalized * _configStore.AsteroidSpeed,
                                                                               _random.NextFloat(-180, 180),
@@ -68,11 +67,11 @@ namespace Asteroid.Gameplay
             }
         }
 
-        private void AsteroidBody_OnCollision(IMapBody body, Vector2 position, IMapBody.MapBodyType type)
+        private void AsteroidBody_OnCollision(IMapBody parentBody, Vector2 position, IMapBody.MapBodyType type)
         {
             if (type == IMapBody.MapBodyType.Ship || type == IMapBody.MapBodyType.Bullet)
             {
-                var asteroidData = _asteroidInstances[body];
+                var asteroidData = _asteroidInstances[parentBody];
 
                 if (_timeService.Time - asteroidData.creationTime < _configStore.AsteroidInvulnerablilitySec)
                 {
@@ -81,30 +80,13 @@ namespace Asteroid.Gameplay
 
                 if (asteroidData.generation < _configStore.AsteroidMaxGeneration)
                 {
-                    IMapBody child1 = _factory.CreateBody(body.Position, asteroidData.generation + 1);
-                    IMapBody child2 = _factory.CreateBody(body.Position, asteroidData.generation + 1);
-
-                    child1.Initialise(_serviceProvider);
-                    child2.Initialise(_serviceProvider);
-
-                    child1.OnCollision += AsteroidBody_OnCollision;
-                    child2.OnCollision += AsteroidBody_OnCollision;
-
-                    Vector2 diff = body.Position - position;
+                    Vector2 diff = parentBody.Position - position;
                     diff = Quaternion.Euler(0, 0, 90) * diff;
-                    var speed1 = diff.normalized * _configStore.AsteroidSpeed;
-                    var speed2 = -speed1;
+                    var speed = diff.normalized * _configStore.AsteroidSpeed;
 
-                    _instancesToAdd.Add(new AsteroidInstanceData(child1,
-                                                                 speed1 * _configStore.AsteroidSpeed,
-                                                                 _random.NextFloat(-180, 180),
-                                                                 _timeService.Time,
-                                                                 asteroidData.generation + 1));
-                    _instancesToAdd.Add(new AsteroidInstanceData(child2,
-                                                                 speed2 * _configStore.AsteroidSpeed,
-                                                                 _random.NextFloat(-180, 180),
-                                                                 _timeService.Time,
-                                                                 asteroidData.generation + 1));
+                    //todo enable more than 2 child
+                    CreateAsteroidChild(parentBody.Position, asteroidData.generation + 1, speed);
+                    CreateAsteroidChild(parentBody.Position, asteroidData.generation + 1, -speed);
                 }
                 else
                 {
@@ -114,14 +96,26 @@ namespace Asteroid.Gameplay
                     }
                 }
 
-                body.OnCollision -= AsteroidBody_OnCollision;
-                _instancesToRemove.Add(body);
+                parentBody.OnCollision -= AsteroidBody_OnCollision;
+                _instancesToRemove.Add(parentBody);
 
                 if(type == IMapBody.MapBodyType.Bullet)
                 {
                     OnAsteroidHitByBullet?.Invoke(asteroidData.generation);
                 }
             }
+        }
+
+        private void CreateAsteroidChild(Vector2 position, int newGeneration, Vector2 speed)
+        {
+            IMapBody child1 = _factory.CreateBody(position, newGeneration);
+            child1.Initialise(_serviceProvider);
+            child1.OnCollision += AsteroidBody_OnCollision;
+            _instancesToAdd.Add(new AsteroidInstanceData(child1,
+                                     speed * _configStore.AsteroidSpeed,
+                                     _random.NextFloat(-180, 180),
+                                     _timeService.Time,
+                                     newGeneration));
         }
 
         public void FixedTick()
@@ -140,10 +134,6 @@ namespace Asteroid.Gameplay
 
             foreach (var instance in _asteroidInstances.Values)
             {
-                if (_instancesToRemove.Contains(instance.body))
-                {
-                    continue;
-                }
                 instance.body.Rotate(instance.rotation * _timeService.FixedDeltaTime);
                 instance.body.Move(instance.speed * _timeService.FixedDeltaTime);
             }

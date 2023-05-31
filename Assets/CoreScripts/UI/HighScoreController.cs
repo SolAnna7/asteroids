@@ -33,14 +33,6 @@ namespace Asteroid.UI
         private TMP_InputField _nameInputField;
         private List<HighScoreEntry> _currentScores;
 
-
-        //private void Awake()
-        //{
-        //    //test
-        //    HighScoreSetupHelper.OpenMode = HighScoreSetupHelper.HighScoreOpenMode.FromGame;
-        //    HighScoreSetupHelper.NewScore = 123;
-        //}
-
         private void Start()
         {
 

@@ -82,6 +82,8 @@ namespace Asteroid.Config
 
         public int AsteroidMaxGeneration => GetIntValueOrThrowException("asteroid.max_generation");
 
+        public int AsteroidStartNumber => GetIntValueOrThrowException("asteroid.start_number");
+
         private string GetStringValueOrThrowException(string key)
         {
             return _configValues.TryGetValue(key, out var value) ? value : throw new Exception($"Key [{key}] not found in configuration file [{_configPath}]");

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Asteroid.Random
 {
-    internal interface IRandomService
+    public interface IRandomService
     {
         float NextFloat(float minInc, float maxInc);
         float NextFloat();
@@ -15,7 +15,6 @@ namespace Asteroid.Random
         Vector2 NextUnitVec2();
     }
 
-    //todo tests
     internal class RandomService : IRandomService
     {
         private System.Random _random;
