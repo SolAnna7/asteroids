@@ -4,21 +4,33 @@ using Asteroid.Services;
 using Asteroid.Time;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// The public api of the AsteroidController used by other services 
+    /// </summary>
     public interface IAsteroidController
     {
+        /// <summary>
+        /// Invoked when an asteroid is hit by a bullet. The first parameter is the generation of the hit asteroid
+        /// </summary>
         public event Action<int> OnAsteroidHitByBullet;
+        /// <summary>
+        /// Invoked when the last asteroid is destroyed
+        /// </summary>
         public event Action OnAllAsteroidsDestroyed;
     }
 
+    /// <summary>
+    /// The main game logic class for handling asteroids
+    /// </summary>
     public class AsteroidController : ServiceProvider.IInitialisableService, IAsteroidController
     {
+        public event Action<int> OnAsteroidHitByBullet;
+        public event Action OnAllAsteroidsDestroyed;
+
         private IConfigStore _configStore;
         private ITimeService _timeService;
         private IRandomService _random;
@@ -28,9 +40,6 @@ namespace Asteroid.Gameplay
         private IDictionary<IMapBody, AsteroidInstanceData> _asteroidInstances = new Dictionary<IMapBody, AsteroidInstanceData>();
         private ISet<IMapBody> _instancesToRemove = new HashSet<IMapBody>();
         private ISet<AsteroidInstanceData> _instancesToAdd = new HashSet<AsteroidInstanceData>();
-
-        public event Action<int> OnAsteroidHitByBullet;
-        public event Action OnAllAsteroidsDestroyed;
 
         public void Initialise(ServiceProvider serviceProvider)
         {
@@ -64,6 +73,30 @@ namespace Asteroid.Gameplay
                                                                               _random.NextFloat(-180, 180),
                                                                               _timeService.Time,
                                                                               0));
+            }
+        }
+
+        /// <summary>
+        /// Should be called every frame from unity FixedUpdate
+        /// </summary>
+        public void FixedTick()
+        {
+            foreach (var toRemove in _instancesToRemove)
+            {
+                _asteroidInstances.Remove(toRemove);
+                toRemove.Destroy();
+            }
+            _instancesToRemove.Clear();
+            foreach (var toAdd in _instancesToAdd)
+            {
+                _asteroidInstances.Add(toAdd.body, toAdd);
+            }
+            _instancesToAdd.Clear();
+
+            foreach (var instance in _asteroidInstances.Values)
+            {
+                instance.body.Rotate(instance.rotation * _timeService.FixedDeltaTime);
+                instance.body.MoveToPosition(instance.speed * _timeService.FixedDeltaTime);
             }
         }
 
@@ -116,27 +149,6 @@ namespace Asteroid.Gameplay
                                      _random.NextFloat(-180, 180),
                                      _timeService.Time,
                                      newGeneration));
-        }
-
-        public void FixedTick()
-        {
-            foreach (var toRemove in _instancesToRemove)
-            {
-                _asteroidInstances.Remove(toRemove);
-                toRemove.Destroy();
-            }
-            _instancesToRemove.Clear();
-            foreach (var toAdd in _instancesToAdd)
-            {
-                _asteroidInstances.Add(toAdd.body, toAdd);
-            }
-            _instancesToAdd.Clear();
-
-            foreach (var instance in _asteroidInstances.Values)
-            {
-                instance.body.Rotate(instance.rotation * _timeService.FixedDeltaTime);
-                instance.body.Move(instance.speed * _timeService.FixedDeltaTime);
-            }
         }
 
         private class AsteroidInstanceData

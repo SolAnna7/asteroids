@@ -2,21 +2,35 @@ using Asteroid.Config;
 using Asteroid.Services;
 using Asteroid.Time;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// The public api of the ShipController used by other services
+    /// </summary>
     public interface IShipController
     {
-        public int CurrentHealth { get; }
-        float RemainingInvulnerability { get; }
-
+        /// <summary>
+        /// Invoked when the ship's health reaches zero
+        /// </summary>
         public event Action OnDeath;
+
+        /// <summary>
+        /// The number of lives the ship currently have
+        /// </summary>
+        public int CurrentHealth { get; }
+
+        /// <summary>
+        /// The remaining seconds of the ships invulnerability (can be negative)
+        /// </summary>
+        float RemainingInvulnerability { get; }
     }
 
+    /// <summary>
+    /// The main game logic class for handling the ship
+    /// </summary>
     public class ShipController : IShipController, ServiceProvider.IInitialisableService
     {
         private IInputHandler _inputHandler;
@@ -35,14 +49,13 @@ namespace Asteroid.Gameplay
         private IMapBody _shipBody;
 
         public event Action OnDeath;
+        public int CurrentHealth => _currentHealt;
+        public float RemainingInvulnerability => _invulnerablityLastTriggered - _timeService.Time + _invulnerablityLengthSec;
 
         public ShipController(IMapBody shipBody)
         {
-            this._shipBody = shipBody;
+            _shipBody = shipBody;
         }
-
-        public int CurrentHealth => _currentHealt;
-        public float RemainingInvulnerability => _invulnerablityLastTriggered - _timeService.Time + _invulnerablityLengthSec;
 
         public void Initialise(ServiceProvider serviceProvider)
         {
@@ -97,7 +110,7 @@ namespace Asteroid.Gameplay
                 _movementSpeedVector *= _maxShipSpeedPerSec / _movementSpeedVector.magnitude;
             }
 
-            _shipBody.Move(_movementSpeedVector);
+            _shipBody.MoveToPosition(_movementSpeedVector);
 
             float rotationVal =
                 (_inputHandler.RotateLeft ? _rotationMultiplierDegreePerSec : 0) +

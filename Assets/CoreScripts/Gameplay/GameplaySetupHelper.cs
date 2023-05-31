@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// Static class that helps with loading the gameplay scene with parameters
+    /// </summary>
     public static class GameplaySetupHelper
     {
         public static int CurrentScore { get; private set; } = -1;

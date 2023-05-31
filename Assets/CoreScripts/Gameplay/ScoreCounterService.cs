@@ -1,18 +1,20 @@
 ﻿using Asteroid.Config;
 using Asteroid.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// Service api for getting the current score
+    /// </summary>
     public interface IScoreCounterService
     {
         public int CurrentScore { get; }
     }
 
+    /// <summary>
+    /// Service for calculating and storing the current game store
+    /// </summary>
     public class ScoreCounterService : ServiceProvider.IInitialisableService, IScoreCounterService
     {
         private IAsteroidController _asteroidController;
@@ -33,7 +35,6 @@ namespace Asteroid.Gameplay
             {
                 CurrentScore = GameplaySetupHelper.CurrentScore;
             }
-
         }
 
         private void OnAsteroidHit(int gen)
@@ -44,7 +45,6 @@ namespace Asteroid.Gameplay
             }
 
             CurrentScore += _asteroidScoresByGen[gen] * GameplaySetupHelper.CurrentLevel;
-
         }
     }
 }

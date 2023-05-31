@@ -1,21 +1,29 @@
 ﻿using Asteroid.Config;
 using Asteroid.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using static Asteroid.Services.ServiceProvider;
 
 namespace Asteroid.Gameplay
 {
-
+    /// <summary>
+    /// Service api to help keeping objects in the map bounds
+    /// </summary>
     public interface IMapConfinementHelper : IInitialisableService
     {
+        /// <summary>
+        /// Tells wheter the specified position is in the map bounds, and returns the confined position if isn't
+        /// </summary>
+        /// <param name="position">Input position</param>
+        /// <param name="radius">The radius of the input object</param>
+        /// <param name="updatedPosition">updated output position</param>
+        /// <returns>Wheter the position in in the map bounds</returns>
         public bool IsOutOfBounds(Vector2 position, float radius, out Vector2 updatedPosition);
     }
 
+
+    /// <summary>
+    /// Service to help keeping objects in the map bounds
+    /// </summary>
     public class MapConfinementHelper : IMapConfinementHelper
     {
 

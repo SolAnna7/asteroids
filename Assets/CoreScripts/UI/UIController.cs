@@ -1,11 +1,6 @@
 ﻿using Asteroid.Gameplay;
 using Asteroid.Services;
 using Asteroid.Time;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,6 +8,9 @@ using UnityEngine.UI;
 
 namespace Asteroid.UI
 {
+    /// <summary>
+    /// Unity component controlling the gameplay ui logic
+    /// </summary>
     public class UIController : MonoBehaviour
     {
         [SerializeField]
@@ -82,10 +80,8 @@ namespace Asteroid.UI
             _infoConfirmButton.onClick.RemoveAllListeners();
             _infoConfirmButton.onClick.AddListener(() =>
             {
-                HighScoreSetupHelper.OpenMode = HighScoreSetupHelper.HighScoreOpenMode.FromGame;
-                HighScoreSetupHelper.NewScore = _scoreService.CurrentScore;
                 _timeService.TimeRunning = true;
-                SceneManager.LoadScene("HighScoreScene");
+                HighScoreSetupHelper.OpenFromGameplay(_scoreService.CurrentScore);
             });
         }
 

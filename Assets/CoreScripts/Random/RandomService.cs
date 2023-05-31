@@ -7,11 +7,29 @@ using UnityEngine;
 
 namespace Asteroid.Random
 {
+    /// <summary>
+    /// Service for getting random values
+    /// </summary>
     public interface IRandomService
     {
-        float NextFloat(float minInc, float maxInc);
+        /// <summary>
+        /// Returns a float value between min (inclusive) and max (exclusive)
+        /// </summary>
+        float NextFloat(float min, float max);
+
+        /// <summary>
+        /// Returns a float value between 0 (inclusive) and 1 (exclusive)
+        /// </summary>
         float NextFloat();
-        Vector2 NextVec2(Vector2 minInc, Vector2 maxInc);
+
+        /// <summary>
+        /// Returns a new vector whoes x and y are between min's (inclusive) and max's (exclusive) x and y respectively
+        /// </summary>
+        Vector2 NextVec2(Vector2 min, Vector2 max);
+
+        /// <summary>
+        /// Returns a random unit vector
+        /// </summary>
         Vector2 NextUnitVec2();
     }
 

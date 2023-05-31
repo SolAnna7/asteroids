@@ -1,20 +1,27 @@
 ﻿using Asteroid.Config;
 using Asteroid.Services;
 using Asteroid.Time;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// The public api of the BulletController used by other services
+    /// </summary>
     public interface IBulletController
     {
+        /// <summary>
+        /// Creates a bullet at the given position and direction
+        /// </summary>
+        /// <param name="position">The position of the bullet</param>
+        /// <param name="forward">The vector of the bullet direction</param>
         void FireBullet(Vector2 position, Vector2 forward);
     }
 
+    /// <summary>
+    /// The main game logic class for handling bullets
+    /// </summary>
     public class BulletController : IBulletController, ServiceProvider.IInitialisableService
     {
         private ServiceProvider _serviceProvider;
@@ -28,6 +35,7 @@ namespace Asteroid.Gameplay
 
         private readonly IDictionary<IMapBody, BulletInstanceData> _bulletInstances = new Dictionary<IMapBody, BulletInstanceData>();
         private readonly ISet<IMapBody> _instancesToRemove = new HashSet<IMapBody>();
+        // creating new objects is expensive, using an object pool for better resource management
         private readonly Stack<IMapBody> _bodyPool = new();
 
         public void FireBullet(Vector2 position, Vector2 forward)
@@ -51,18 +59,10 @@ namespace Asteroid.Gameplay
             }
 
             body.Forward = forward;
-            body.Position = position;
+            body.MoveToPosition(position);
 
             _bulletInstances.Add(body, new BulletInstanceData(body, forward * _bulletSpeed, _timeService.Time));
             _lastBulletFired = _timeService.Time;
-        }
-
-        private void Bullet_OnCollision(IMapBody body, Vector2 position, IMapBody.MapBodyType type)
-        {
-            if (type == IMapBody.MapBodyType.Asteroid || type == IMapBody.MapBodyType.UFO)
-            {
-                _instancesToRemove.Add(body);
-            }
         }
 
         public void FixedTick()
@@ -77,7 +77,7 @@ namespace Asteroid.Gameplay
 
             foreach (var instance in _bulletInstances.Values)
             {
-                instance.body.Move(instance.speed * _timeService.FixedDeltaTime);
+                instance.body.MoveToPosition(instance.speed * _timeService.FixedDeltaTime);
 
                 if (_timeService.Time - instance.creationTime > _bulletLifetime)
                 {
@@ -100,6 +100,13 @@ namespace Asteroid.Gameplay
             _lastBulletFired = -_bulletFireInterval;
         }
 
+        private void Bullet_OnCollision(IMapBody body, Vector2 position, IMapBody.MapBodyType type)
+        {
+            if (type == IMapBody.MapBodyType.Asteroid || type == IMapBody.MapBodyType.UFO)
+            {
+                _instancesToRemove.Add(body);
+            }
+        }
 
         private class BulletInstanceData
         {

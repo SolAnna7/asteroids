@@ -1,12 +1,12 @@
 using Asteroid.Gameplay;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Asteroid.UI
 {
+    /// <summary>
+    /// Unity component controlling the main menu ui logic
+    /// </summary>
     public class MainMenuController : MonoBehaviour
     {
 
@@ -28,8 +28,7 @@ namespace Asteroid.UI
             });
             _highScoreButton.onClick.AddListener(() =>
             {
-                HighScoreSetupHelper.OpenMode = HighScoreSetupHelper.HighScoreOpenMode.FromMenu;
-                SceneManager.LoadScene("HighScoreScene");
+                HighScoreSetupHelper.OpenFromMenu();
             });
 #if UNITY_EDITOR
             _exitButton.onClick.AddListener(() => { UnityEditor.EditorApplication.isPlaying = false; });

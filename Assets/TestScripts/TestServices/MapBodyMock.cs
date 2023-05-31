@@ -1,10 +1,6 @@
 ﻿using Asteroid.Gameplay;
 using Asteroid.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Asteroid.Tests
@@ -25,7 +21,7 @@ namespace Asteroid.Tests
         {
         }
 
-        public void Move(Vector2 position) => LastMoveValue = position;
+        public void MoveToPosition(Vector2 position) => LastMoveValue = position;
 
         public void Rotate(float angle) => LastRotationValue = angle;
 

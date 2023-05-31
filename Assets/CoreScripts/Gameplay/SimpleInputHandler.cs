@@ -1,10 +1,11 @@
-using Asteroid.Services;
 using System;
 using UnityEngine;
-using static Asteroid.Services.ServiceProvider;
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// Api for getting the current input state
+    /// </summary>
     public interface IInputHandler
     {
 
@@ -17,6 +18,9 @@ namespace Asteroid.Gameplay
         public bool RotateRight { get; }
     }
 
+    /// <summary>
+    /// Input implementation using the old unity input system
+    /// </summary>
     public class SimpleInputHandler : IInputHandler
     {
         public event Action PauseToggle;

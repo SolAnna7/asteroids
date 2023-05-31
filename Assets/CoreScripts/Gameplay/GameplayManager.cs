@@ -3,13 +3,13 @@ using Asteroid.Random;
 using Asteroid.Services;
 using Asteroid.Time;
 using Asteroid.UI;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// Unity component responsible for setting up and running the gameplay scene
+    /// </summary>
     public class GameplayManager : MonoBehaviour
     {
         [SerializeField]
@@ -53,7 +53,6 @@ namespace Asteroid.Gameplay
             timeService.TimeRunning = true;
         }
 
-        // Update is called once per frame
         void Update()
         {
             _inputHandlet.Tick();

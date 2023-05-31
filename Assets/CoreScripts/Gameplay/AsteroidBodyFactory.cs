@@ -7,21 +7,31 @@ using UnityEngine;
 
 namespace Asteroid.Gameplay
 {
+    /// <summary>
+    /// The service for creating new instances of asteroid bodies
+    /// </summary>
     public interface IAsteroidBodyFactory
     {
+        /// <summary>
+        /// Generates a new asteroid body
+        /// </summary>
+        /// <param name="position">Where the asteroid should be created on the map</param>
+        /// <param name="generation">The generation of the new asteroid</param>
+        /// <returns></returns>
         public IMapBody CreateBody(Vector2 position, int generation);
     }
 
+    /// <summary>
+    /// Loads and instantiates the asteroid prefab using unity Resources
+    /// </summary>
     public class ResourceAsteroidBodyFactory : IAsteroidBodyFactory
     {
         public IMapBody CreateBody(Vector2 position, int generation)
         {
-
-            //prefab loading
             MapBody prefab = Resources.Load<MapBody>("Asteroid");
             if (prefab == null)
             {
-                throw new Exception("Asteroid not found");
+                throw new Exception("Asteroid prefab not found");
             }
 
             var instance = UnityEngine.Object.Instantiate(prefab);

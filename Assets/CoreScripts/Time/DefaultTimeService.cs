@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Asteroid.Time
 {
+    /// <summary>
+    /// Service to provide time info
+    /// </summary>
     public interface ITimeService
     {
         float Time { get; }

@@ -1,9 +1,6 @@
 ﻿using Asteroid.Gameplay;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,11 +8,14 @@ using UnityEngine.UI;
 
 namespace Asteroid.UI
 {
+    /// <summary>
+    /// Unity component controlling the high score ui logic
+    /// </summary>
     public class HighScoreController : MonoBehaviour
     {
         private const int storedScoreNum = 8;
 
-        [Header("Menu Buttons")]
+        [Header("Score list")]
         [SerializeField]
         private TMP_Text _scoreText;
         [SerializeField]
@@ -24,7 +24,7 @@ namespace Asteroid.UI
         private GameObject _scoreLinePrototype;
         [SerializeField]
         private GameObject _scoreInputPrototype;
-        [Header("Menu Buttons")]
+        [Header("Buttons")]
         [SerializeField]
         private Button _menuButton;
         [SerializeField]
@@ -147,7 +147,6 @@ namespace Asteroid.UI
 
             PlayerPrefs.Save();
         }
-
 
         private class HighScoreEntry
         {
