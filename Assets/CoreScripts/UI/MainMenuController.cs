@@ -54,8 +54,8 @@ namespace Asteroid.UI
         {
             float time = UnityEngine.Time.time;
             _ship.transform.position = _originalShipPos + _shipMovementMultiplier * new Vector2(
-                Mathf.Sin(time) + Mathf.Cos(time * 2) * 2,
-                Mathf.Cos(time) * 2 + Mathf.Sin(time * 2) * 4);
+                Mathf.Sin(time/4) + Mathf.Cos(time /2 + 10) * -2,
+                Mathf.Cos(time/4 + 7) * 2 + Mathf.Sin(time /2) * 4);
         }
     }
 
