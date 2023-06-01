@@ -2,6 +2,8 @@
 using Asteroid.Input;
 using Asteroid.Services;
 using Asteroid.Time;
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,8 +16,11 @@ namespace Asteroid.UI
     /// </summary>
     public class UIController : MonoBehaviour
     {
+        [Header("Game UI")]
         [SerializeField]
-        private TMP_Text _lifeText;
+        private Transform _lifeIconParent;
+        [SerializeField]
+        private GameObject _prototypeIcon;
         [SerializeField]
         private TMP_Text _scoreText;
 
@@ -45,6 +50,8 @@ namespace Asteroid.UI
         private IInputHandler _inputHandler;
         private ITimeService _timeService;
         private IScoreCounterService _scoreService;
+
+        private Stack<GameObject> _lifeIconStack = new Stack<GameObject>();
         public void Initialise(ServiceProvider serviceProvider)
         {
             _shipController = serviceProvider.GetService<IShipController>();
@@ -56,6 +63,19 @@ namespace Asteroid.UI
             _inputHandler.PauseToggle += PauseToggle;
             _asteroidController.OnAllAsteroidsDestroyed += OnAllAsteroidsDestroyed;
             _shipController.OnDeath += ShipController_OnDeath;
+            _shipController.OnDamage += ShipController_OnDamage;
+
+            for (int i = 0; i < _shipController.CurrentHealth; i++)
+            {
+                var icon = Instantiate(_prototypeIcon, _lifeIconParent);
+                _lifeIconStack.Push(icon);
+            }
+            _prototypeIcon.SetActive(false);
+        }
+
+        private void ShipController_OnDamage()
+        {
+            _lifeIconStack.Pop().SetActive(false);
         }
 
         private void OnAllAsteroidsDestroyed()
@@ -101,13 +121,6 @@ namespace Asteroid.UI
 
         public void Tick()
         {
-            string healtStr = _shipController.CurrentHealth.ToString();
-            if (_shipController.RemainingInvulnerability > 0)
-            {
-                healtStr = $"({healtStr})";
-            }
-
-            _lifeText.text = healtStr;
             _scoreText.text = _scoreService.CurrentScore.ToString();
         }
 

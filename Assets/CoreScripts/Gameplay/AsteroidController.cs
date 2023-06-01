@@ -18,6 +18,10 @@ namespace Asteroid.Gameplay
         /// </summary>
         public event Action<int> OnAsteroidHitByBullet;
         /// <summary>
+        /// Invoked when an asteroid colloided with anything
+        /// </summary>
+        public event Action<IMapBody> OnAsteroidCollison;
+        /// <summary>
         /// Invoked when the last asteroid is destroyed
         /// </summary>
         public event Action OnAllAsteroidsDestroyed;
@@ -30,6 +34,7 @@ namespace Asteroid.Gameplay
     {
         public event Action<int> OnAsteroidHitByBullet;
         public event Action OnAllAsteroidsDestroyed;
+        public event Action<IMapBody> OnAsteroidCollison;
 
         private IConfigStore _configStore;
         private ITimeService _timeService;
@@ -110,6 +115,8 @@ namespace Asteroid.Gameplay
                 {
                     return;
                 }
+
+                OnAsteroidCollison?.Invoke(asteroidData.body);
 
                 if (asteroidData.generation < _configStore.AsteroidMaxGeneration)
                 {

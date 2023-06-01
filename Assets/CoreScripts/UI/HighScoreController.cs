@@ -46,17 +46,23 @@ namespace Asteroid.UI
                 case HighScoreSetupHelper.HighScoreOpenMode.FromGame:
                     _backToGameButton.onClick.AddListener(() =>
                     {
-                        AddScoreAndSave();
+                        if (HighScoreSetupHelper.NewScore != 0)
+                        {
+                            AddScoreAndSave();
+                        }
                         GameplaySetupHelper.LoadGameplayScene();
                     });
                     _menuButton.onClick.AddListener(() =>
                     {
-                        AddScoreAndSave();
+                        if (HighScoreSetupHelper.NewScore != 0)
+                        {
+                            AddScoreAndSave();
+                        }
                         SceneManager.LoadScene("MainMenuScene");
                     });
 
-                    _backToGameButton.interactable = false;
-                    _menuButton.interactable = false;
+                    _backToGameButton.interactable = HighScoreSetupHelper.NewScore == 0;
+                    _menuButton.interactable = HighScoreSetupHelper.NewScore == 0;
                     _scoreText.text = $"New score: {HighScoreSetupHelper.NewScore}";
                     break;
             }

@@ -19,6 +19,11 @@ namespace Asteroid.Gameplay
         public event Action OnDeath;
 
         /// <summary>
+        /// Invoked when the ship takes damage
+        /// </summary>
+        public event Action OnDamage;
+
+        /// <summary>
         /// The number of lives the ship currently have
         /// </summary>
         public int CurrentHealth { get; }
@@ -50,6 +55,8 @@ namespace Asteroid.Gameplay
         private IMapBody _shipBody;
 
         public event Action OnDeath;
+        public event Action OnDamage;
+
         public int CurrentHealth => _currentHealt;
         public float RemainingInvulnerability => _invulnerablityLastTriggered - _timeService.Time + _invulnerablityLengthSec;
 
@@ -88,6 +95,8 @@ namespace Asteroid.Gameplay
 
             _currentHealt -= 1;
             _invulnerablityLastTriggered = _timeService.Time;
+
+            OnDamage?.Invoke();
 
             if (_currentHealt <= 0)
             {

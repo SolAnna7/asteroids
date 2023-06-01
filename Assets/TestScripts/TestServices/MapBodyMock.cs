@@ -29,6 +29,8 @@ namespace Asteroid.Tests
         public Vector2 LastMoveValue { get; private set; }
         public float LastRotationValue { get; private set; }
 
-        public void InvokeOnCollision(Vector2 pos, IMapBody.MapBodyType bodyType) => OnCollision?.Invoke(this, pos, bodyType);
+        public float Radius { get; set; }
+
+    public void InvokeOnCollision(Vector2 pos, IMapBody.MapBodyType bodyType) => OnCollision?.Invoke(this, pos, bodyType);
     }
 }

@@ -57,6 +57,12 @@ namespace Asteroid.Gameplay
         /// </summary>
         public void Destroy();
 
+        /// <summary>
+        /// Returns the radius of the body
+        /// </summary>
+        /// <returns></returns>
+        public float Radius { get; }
+
         public enum MapBodyType
         {
             None = 0,
@@ -75,6 +81,7 @@ namespace Asteroid.Gameplay
 
         private IMapConfinementHelper _mapHelper;
         private Rigidbody2D _rigidbody2D;
+        private CircleCollider2D _collider;
 
         public Vector2 Forward
         {
@@ -96,6 +103,8 @@ namespace Asteroid.Gameplay
 
         public IMapBody.MapBodyType Type => ownType;
 
+        public float Radius => _collider.radius * transform.lossyScale.x;
+
         public event Action<IMapBody, Vector2, IMapBody.MapBodyType> OnCollision;
 
         private void Awake()
@@ -106,6 +115,7 @@ namespace Asteroid.Gameplay
             }
 
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            _collider = GetComponent<CircleCollider2D>();
         }
 
         public void Initialise(ServiceProvider serviceProvider)

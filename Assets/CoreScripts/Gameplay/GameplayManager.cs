@@ -4,6 +4,7 @@ using Asteroid.Random;
 using Asteroid.Services;
 using Asteroid.Time;
 using Asteroid.UI;
+using Asteroid.Visuals;
 using UnityEngine;
 
 namespace Asteroid.Gameplay
@@ -15,6 +16,10 @@ namespace Asteroid.Gameplay
     {
         [SerializeField]
         private MapBody _shipBody;
+        [SerializeField]
+        private ShipVisualController _shipVisualController;
+        [SerializeField]
+        private AsteroidVisualController _asteroidVisualController;
         [SerializeField]
         private UIController _uiController;
 
@@ -46,6 +51,8 @@ namespace Asteroid.Gameplay
                 .RegisterService<IBulletController>(_bulletController)
                 .RegisterService<IShipController>(_shipController)
                 .RegisterService<IScoreCounterService>(_scoreService)
+                .RegisterService(_shipVisualController)
+                .RegisterService(_asteroidVisualController)
                 .Initialise();
 
             _uiController.Initialise(_serviceProvider);
